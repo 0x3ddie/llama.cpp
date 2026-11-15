@@ -11,6 +11,8 @@
 #include "mtmd.h"
 #include "mtmd-helper.h"
 
+#include "../../src/llama-deprecations.h"
+
 #include <algorithm>
 #include <atomic>
 #include <climits>
@@ -1021,6 +1023,7 @@ bool server_realtime_slot::decode(const llama_token * tokens, const float * rows
     }
     for (int32_t i0 = 0; i0 < n; i0 += n_batch) {
         const int32_t n_cur = std::min(n_batch, n - i0);
+        LLAMA_IGNORE_DEPRECATED_BEGIN
         llama_batch b = llama_batch_init(n_cur, rows ? n_embd : 0, 1);
         for (int32_t i = 0; i < n_cur; i++) {
             if (rows) {
@@ -1036,6 +1039,7 @@ bool server_realtime_slot::decode(const llama_token * tokens, const float * rows
         b.n_tokens = n_cur;
         const int ret = llama_decode(ctx, b);
         llama_batch_free(b);
+        LLAMA_IGNORE_DEPRECATED_END
         if (ret != 0) {
             return fail("failed to decode the conversation");
         }

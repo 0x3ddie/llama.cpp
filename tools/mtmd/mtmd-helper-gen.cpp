@@ -3,6 +3,7 @@
 #include "mtmd-helper-common.h"
 #include "llama.h"
 #include "../src/llama-ext.h"
+#include "../src/llama-deprecations.h"
 
 #include <algorithm>
 #include <cctype>
@@ -1204,6 +1205,7 @@ private:
     }
 
     bool decode(llama_token * tokens, int n) {
+        LLAMA_IGNORE_DEPRECATED_BEGIN
         llama_batch batch = llama_batch_init(n, 0, 1);
         batch.n_tokens = n;
         for (int i = 0; i < n; ++i) {
@@ -1215,6 +1217,7 @@ private:
         }
         const int ret = llama_decode(lctx, batch);
         llama_batch_free(batch);
+        LLAMA_IGNORE_DEPRECATED_END
         if (ret != 0) {
             LOG_ERR("mtmd_helper_gen_audio: soprano backbone decode failed\n");
             return false;
@@ -1328,6 +1331,7 @@ public:
             return 0;
         }
         const int n = std::min(n_batch, n_prompt - prompt_pos);
+        LLAMA_IGNORE_DEPRECATED_BEGIN
         llama_batch batch = llama_batch_init(n, 0, 1);
         for (int i = 0; i < n; i++) {
             batch.token   [i]    = prompt_tokens[(size_t) (prompt_pos + i)];
@@ -1339,6 +1343,7 @@ public:
         batch.n_tokens = n;
         const int ret = llama_decode(lctx, batch);
         llama_batch_free(batch);
+        LLAMA_IGNORE_DEPRECATED_END
         if (ret != 0) {
             LOG_ERR("mtmd_helper_gen_audio: prompt decode failed\n");
             return -1;
@@ -1380,7 +1385,9 @@ public:
                 text_done = true;
                 speaking  = true;
             }
+            LLAMA_IGNORE_DEPRECATED_BEGIN
             llama_batch batch = llama_batch_get_one(&sampled, 1);
+            LLAMA_IGNORE_DEPRECATED_END
             if (!decode(batch)) {
                 return 1;
             }
@@ -1638,7 +1645,10 @@ private:
         batch.n_seq_id = n_seq.data();
         batch.seq_id   = seq_ptr.data();
         batch.logits   = logits.data();
-        if (llama_decode(lctx, batch) != 0) {
+        LLAMA_IGNORE_DEPRECATED_BEGIN
+        const int ret = llama_decode(lctx, batch);
+        LLAMA_IGNORE_DEPRECATED_END
+        if (ret != 0) {
             LOG_ERR("mtmd_helper_gen_audio: decode failed\n");
             return false;
         }
@@ -2158,6 +2168,7 @@ public:
         }
         // small batches: every row also outputs logits
         const int n = std::min({ n_batch, n_prompt - prompt_pos, 64 });
+        LLAMA_IGNORE_DEPRECATED_BEGIN
         llama_batch batch = llama_batch_init(n, 0, 1);
         for (int i = 0; i < n; i++) {
             batch.token   [i]    = prompt_tokens[(size_t) (prompt_pos + i)];
@@ -2169,6 +2180,7 @@ public:
         batch.n_tokens = n;
         const int ret = llama_decode(lctx, batch);
         llama_batch_free(batch);
+        LLAMA_IGNORE_DEPRECATED_END
         if (ret != 0) {
             LOG_ERR("mtmd_helper_gen_audio: prompt decode failed\n");
             return -1;

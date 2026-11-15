@@ -5,6 +5,7 @@
 #include "llama-graph.h"
 #include "llama-impl.h"
 #include "llama-batch.h"
+#include "llama-deprecations.h"
 #include "llama-io.h"
 #include "llama-memory.h"
 #include "llama-mmap.h"
@@ -4377,7 +4378,9 @@ void llama_context::opt_epoch(
 
     const uint32_t ubatch_per_ctx = n_ctx / n_ubatch;
 
+    LLAMA_IGNORE_DEPRECATED_BEGIN
     struct llama_batch batch = llama_batch_init(n_batch, 0, 1);
+    LLAMA_IGNORE_DEPRECATED_END
     std::vector<llama_token>        tokens(n_ctx);
     std::vector<llama_token> labels_sparse(n_ctx);
 
@@ -4405,7 +4408,9 @@ void llama_context::opt_epoch(
             callback_eval, train, idata_in_loop, ndata_in_loop, t_loop_start);
     }
 
+    LLAMA_IGNORE_DEPRECATED_BEGIN
     llama_batch_free(batch);
+    LLAMA_IGNORE_DEPRECATED_END
 }
 
 //

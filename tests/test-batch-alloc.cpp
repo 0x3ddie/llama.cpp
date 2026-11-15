@@ -5,6 +5,7 @@
 #include "../src/llama-batch.h"
 #include "../src/llama-arch.h"
 #include "../src/llama-hparams.h"
+#include "../src/llama-deprecations.h"
 #include "../src/llama-memory.h"
 #include "../src/llama-vocab.h"
 
@@ -978,7 +979,9 @@ static void test_compat(testing & t) {
         mem.ranges[0] = {0, 9};
 
         llama_token token[3] = { 5, 6, 7 };
+        LLAMA_IGNORE_DEPRECATED_BEGIN
         llama_batch lb = llama_batch_get_one(token, 3);
+        LLAMA_IGNORE_DEPRECATED_END
 
         batch_builder bb(2, &mem, 4, 1, /*n_vocab*/ 100);
         llama_batch_compat::init(bb.b, lb);
@@ -999,7 +1002,9 @@ static void test_compat(testing & t) {
 
     t.test("auto_pos_starts_at_zero_without_memory", [&](testing & t) {
         llama_token token[2] = { 5, 6 };
+        LLAMA_IGNORE_DEPRECATED_BEGIN
         llama_batch lb = llama_batch_get_one(token, 2);
+        LLAMA_IGNORE_DEPRECATED_END
 
         batch_builder bb(2, nullptr, 4, 1, /*n_vocab*/ 100);
         llama_batch_compat::init(bb.b, lb);

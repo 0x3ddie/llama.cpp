@@ -8,6 +8,7 @@
 #include "common.h"
 
 #include "../../src/llama-ext.h" // llama_model_set_attn_rot, llama_arch_from_string
+#include "../../src/llama-deprecations.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -557,7 +558,10 @@ struct case_state_rotation : ctx_test {
             }
 
             llama_token token = 0;
-            if (llama_decode(src.get(), llama_batch_get_one(&token, 1))) {
+            LLAMA_IGNORE_DEPRECATED_BEGIN
+            const int ret = llama_decode(src.get(), llama_batch_get_one(&token, 1));
+            LLAMA_IGNORE_DEPRECATED_END
+            if (ret != 0) {
                 TLOG_ERR("%s: failed to decode a token\n", __func__);
                 success = false;
                 break;

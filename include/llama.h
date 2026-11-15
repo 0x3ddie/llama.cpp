@@ -272,6 +272,7 @@ extern "C" {
     //            )
     //
     // [DEPRECATED] use llama_batch_ext instead
+    // todo: migrate the llama.cpp codebase to llama_batch_ext
     typedef struct llama_batch {
         int32_t n_tokens;
 
